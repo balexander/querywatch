@@ -1,0 +1,20 @@
+# .codex/config.toml — querywatch project config
+#
+# Codex loads this automatically when working in the repo (trusted projects only).
+# User-level overrides in ~/.codex/config.toml take precedence.
+
+# Use the default Codex model (currently gpt-5.2-codex).
+# Uncomment to pin a specific model:
+# model = "gpt-5.2-codex"
+
+# Let Codex run pytest, hatch build, pip install -e, etc. without approving
+# every shell command. It can write to the workspace but not outside it.
+sandbox_mode = "workspace-write"
+
+# Still pause for confirmation on anything unexpected (network calls, etc.).
+approval_policy = "on-request"
+
+# Allow pip install to write to the venv/site-packages outside the workspace.
+# Adjust if your venv lives elsewhere.
+[sandbox_workspace_write]
+add_writable_roots = ["/tmp"]
