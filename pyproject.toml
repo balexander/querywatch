@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "querywatch"
+version = "0.1.0"
+description = "Agentic Databricks query optimization workflow"
+requires-python = ">=3.11"
+dependencies = [
+  "openai",
+  "pydantic>=2",
+  "pandas",
+  "sqlglot",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-mock",
+]
+
+[project.scripts]
+querywatch-job = "querywatch.job.entrypoint:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["querywatch"]

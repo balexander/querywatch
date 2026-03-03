@@ -20,8 +20,8 @@
 |----------|--------|-----|
 | Deployment | Databricks job | Admin + system tables = richer data than REST API; runs automatically |
 | CLI path | v2, no refactor needed | core/job separation preserves it from day one |
-| LLM | Anthropic (Sonnet + Haiku) | Sonnet for reasoning, Haiku for cheap triage passes |
-| Agent framework | Raw Anthropic SDK tool use | Learning the primitives; LangChain hides the loop |
+| LLM | OpenRouter (Claude Sonnet + Haiku routes) | Keeps provider routing flexible while using strong Claude models |
+| Agent framework | OpenRouter via OpenAI SDK tool use | Learning the primitives; LangChain hides the loop |
 | Results | Append-only Delta table | Historical trends; never overwrite prior runs |
 | Triage formula | `duration_ms × execution_count` | Biases toward recurring expensive queries, not one-off monsters |
 | v1 output | Delta table only | Slack + dashboard are v2 |

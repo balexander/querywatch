@@ -15,7 +15,7 @@
 
 ```bash
 pip install -e ".[dev]"
-cp .env.example .env          # add ANTHROPIC_API_KEY
+cp .env.example .env          # add OPENROUTER_API_KEY
 pytest tests/ -v              # must pass without a live workspace
 hatch build                   # produces dist/*.whl for deployment
 ```
@@ -26,7 +26,7 @@ hatch build                   # produces dist/*.whl for deployment
 
 **`querywatch/core/` must never import `databricks.sdk`, `pyspark`, or anything from Databricks Runtime.**
 
-Allowed in `core/`: stdlib, `anthropic`, `pydantic`, `pandas`, `sqlglot`.
+Allowed in `core/`: stdlib, `openai`, `pydantic`, `pandas`, `sqlglot`.
 
 Databricks-specific code lives exclusively in `querywatch/job/`. If you're about to add a Databricks import to `core/`, stop and restructure.
 
@@ -48,8 +48,8 @@ Databricks-specific code lives exclusively in `querywatch/job/`. If you're about
 
 ## LLM Conventions
 
-- Reasoning calls: `claude-sonnet-4-5-20250929` with Anthropic tool use
-- Triage calls: `claude-haiku-4-5-20251001`
+- Reasoning calls: Claude Sonnet via OpenRouter tool use
+- Triage calls: Claude Haiku via OpenRouter
 - All LLM calls live in `core/agent.py` only — never in `job/`
 - Every `RewriteResult` must have non-empty `reasoning` and `hypothesized_issue` — blank fields are a bug
 - Low-confidence rewrites (`confidence="low"`) are stored in Delta but `improvement_pct` is set to `None`
@@ -70,8 +70,8 @@ Databricks-specific code lives exclusively in `querywatch/job/`. If you're about
 
 - **System table:** `system.query.history`
 - **Results table:** `<catalog>.querywatch.optimization_results` (append-only Delta)
-- **Secret scope:** `querywatch-secrets` → key: `anthropic-api-key`
-- **Secrets call:** `dbutils.secrets.get(scope="querywatch-secrets", key="anthropic-api-key")`
+- **Secret scope:** `querywatch-secrets` → key: `openrouter-api-key`
+- **Secrets call:** `dbutils.secrets.get(scope="querywatch-secrets", key="openrouter-api-key")`
 
 ---
 

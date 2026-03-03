@@ -20,13 +20,13 @@ hatch build             # produces dist/*.whl
 
 - `querywatch/core/` must not import `databricks.sdk`, `pyspark`, or any Databricks Runtime library
 - `job/entrypoint.py` is the only place Databricks-specific code lives; keep it ~50 lines
-- All LLM calls live in `core/agent.py` only — use `anthropic` SDK directly, no LangChain
+- All LLM calls live in `core/agent.py` only — use OpenRouter via the `openai` SDK directly, no LangChain
 - Type hints on every function signature
 - Pydantic v2 for all domain objects — no raw dicts
 - No silent exception handling — log and re-raise
 - `improvement_pct` must be `None` when `equivalent=False` — never compute it otherwise
 - Every `RewriteResult` must have non-empty `reasoning` and `hypothesized_issue`
-- Tests must mock all Anthropic and Databricks clients — no live calls in CI
+- Tests must mock all OpenRouter and Databricks clients — no live calls in CI
 - `querywatch/cli/` does not exist yet — `README.md` placeholder only
 
 ---
@@ -46,7 +46,7 @@ def score_queries(queries: list[QueryRecord], top_n: int = 10) -> list[QueryReco
 # core/agent.py
 def analyze_and_rewrite(
     query: QueryRecord,
-    client: anthropic.Anthropic
+    client: openai.OpenAI
 ) -> RewriteResult: ...
 
 # core/benchmark.py
