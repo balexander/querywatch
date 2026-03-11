@@ -9,6 +9,10 @@
 
 **querywatch** — agentic Databricks job: reads `system.query.history` → LLM diagnoses + rewrites slow queries → benchmarks → validates → writes to Delta.
 
+## Overarching Rules
+
+- Always write tests. Write tests BEFORE implementing or changing models or logic.
+
 ---
 
 ## Setup
@@ -88,17 +92,17 @@ Databricks-specific code lives exclusively in `querywatch/job/`. If you're about
 
 ## Build Status
 
-- [ ] Repo + pyproject.toml scaffolded
-- [ ] `core/models.py`
-- [ ] `core/ingestion.py`
-- [ ] `core/triage.py`
-- [ ] `core/agent.py`
-- [ ] `core/benchmark.py`
-- [ ] `core/validator.py`
-- [ ] `core/reporter.py`
-- [ ] `job/entrypoint.py`
+- [x] Repo + pyproject.toml scaffolded
+- [x] `core/models.py`
+- [x] `core/ingestion.py`
+- [x] `core/triage.py`
+- [x] `core/agent.py`
+- [x] `core/benchmark.py`
+- [x] `core/validator.py`
+- [x] `core/reporter.py`
+- [x] `job/entrypoint.py`
 - [ ] Delta table created
-- [ ] Tests passing (mocked)
+- [x] Tests passing (mocked)
 - [ ] Wheel deployed + job running
 - [ ] Slack (v2)
 - [ ] CLI (v2)
