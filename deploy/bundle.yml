@@ -11,21 +11,12 @@ variables:
   job_name:
     description: Databricks job name
     default: querywatch
-  spark_version:
-    description: Databricks runtime version
-    default: 14.3.x-scala2.12
-  node_type_id:
-    description: Worker node type id
-    default: Standard_DS3_v2
-  num_workers:
-    description: Worker count
-    default: "1"
   source_table:
     description: Unity Catalog source for query history
     default: system.query.history
   results_table:
     description: Delta table for benchmark output
-    default: main.querywatch.optimization_results
+    default: dev.de.querywatch_optimization_results
   top_n:
     description: Top N candidate queries per run
     default: "10"
@@ -41,6 +32,9 @@ variables:
   openai_base_url:
     description: OpenRouter base URL for OpenAI-compatible SDK
     default: https://openrouter.ai/api/v1
+  serverless_environment_version:
+    description: Databricks serverless jobs environment version
+    default: "4"
 
 targets:
   dev:
@@ -55,17 +49,10 @@ resources:
           python_wheel_task:
             package_name: querywatch
             entry_point: querywatch-job
-          libraries:
-            - whl: ${artifacts.querywatch_wheel.whl}
-          new_cluster:
-            spark_version: ${var.spark_version}
-            node_type_id: ${var.node_type_id}
-            num_workers: ${var.num_workers}
-            spark_env_vars:
-              QUERYWATCH_SOURCE_TABLE: ${var.source_table}
-              QUERYWATCH_RESULTS_TABLE: ${var.results_table}
-              QUERYWATCH_TOP_N: ${var.top_n}
-              QUERYWATCH_N_RUNS: ${var.n_runs}
-              QUERYWATCH_SECRET_SCOPE: ${var.secret_scope}
-              QUERYWATCH_SECRET_KEY: ${var.secret_key}
-              OPENAI_BASE_URL: ${var.openai_base_url}
+          environment_key: default
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: ${var.serverless_environment_version}
+            dependencies:
+              - ../dist/*.whl
