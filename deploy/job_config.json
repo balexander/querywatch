@@ -1,0 +1,31 @@
+{
+  "name": "${QUERYWATCH_JOB_NAME}",
+  "tasks": [
+    {
+      "task_key": "run_querywatch",
+      "python_wheel_task": {
+        "package_name": "querywatch",
+        "entry_point": "querywatch-job"
+      },
+      "libraries": [
+        {
+          "whl": "${QUERYWATCH_WHEEL_PATH}"
+        }
+      ],
+        "new_cluster": {
+          "spark_version": "${QUERYWATCH_SPARK_VERSION}",
+          "node_type_id": "${QUERYWATCH_NODE_TYPE_ID}",
+          "num_workers": "${QUERYWATCH_NUM_WORKERS}",
+        "spark_env_vars": {
+          "QUERYWATCH_SOURCE_TABLE": "${QUERYWATCH_SOURCE_TABLE}",
+          "QUERYWATCH_RESULTS_TABLE": "${QUERYWATCH_RESULTS_TABLE}",
+          "QUERYWATCH_TOP_N": "${QUERYWATCH_TOP_N}",
+          "QUERYWATCH_N_RUNS": "${QUERYWATCH_N_RUNS}",
+          "QUERYWATCH_SECRET_SCOPE": "${QUERYWATCH_SECRET_SCOPE}",
+          "QUERYWATCH_SECRET_KEY": "${QUERYWATCH_SECRET_KEY}",
+          "OPENAI_BASE_URL": "${OPENAI_BASE_URL}"
+        }
+      }
+    }
+  ]
+}
