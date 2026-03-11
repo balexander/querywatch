@@ -22,3 +22,17 @@ def test_check_equivalence_true_for_two_empty_results() -> None:
     result_b = pd.DataFrame(columns=["y"])
 
     assert check_equivalence(result_a, result_b) is True
+
+
+def test_check_equivalence_supports_count_frames() -> None:
+    result_a = pd.DataFrame({"__row_count__": [100]})
+    result_b = pd.DataFrame({"__row_count__": [100]})
+
+    assert check_equivalence(result_a, result_b) is True
+
+
+def test_check_equivalence_count_frames_detect_mismatch() -> None:
+    result_a = pd.DataFrame({"__row_count__": [100]})
+    result_b = pd.DataFrame({"__row_count__": [99]})
+
+    assert check_equivalence(result_a, result_b) is False

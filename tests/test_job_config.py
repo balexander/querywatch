@@ -21,7 +21,8 @@ def test_job_config_from_env_uses_defaults(monkeypatch: pytest.MonkeyPatch) -> N
     config = JobConfig.from_env()
 
     assert config.source_table == "system.query.history"
-    assert config.results_table == "main.querywatch.optimization_results"
+    # PERSONALIZE: Update this assertion if you replace the default results table.
+    assert config.results_table == "dev.de.querywatch_optimization_results"
     assert config.top_n == 10
     assert config.n_runs == 3
     assert config.secret_scope == "querywatch-secrets"

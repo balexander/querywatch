@@ -66,7 +66,8 @@ Override deploy-time values with `--var`:
 ```bash
 databricks bundle deploy --target dev \
   --var="job_name=querywatch-dev" \
-  --var="results_table=main.querywatch.optimization_results" \
+  # PERSONALIZE: Replace this example results table with your own destination.
+  --var="results_table=dev.de.querywatch_optimization_results" \
   --var="source_table=system.query.history" \
   --var="top_n=10" \
   --var="n_runs=3"

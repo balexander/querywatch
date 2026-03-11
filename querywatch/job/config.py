@@ -19,8 +19,9 @@ class JobConfig:
         source_table = _read_non_empty_env(
             "QUERYWATCH_SOURCE_TABLE", "system.query.history"
         )
+        # PERSONALIZE: Replace this environment-specific default results table before sharing broadly.
         results_table = _read_non_empty_env(
-            "QUERYWATCH_RESULTS_TABLE", "main.querywatch.optimization_results"
+            "QUERYWATCH_RESULTS_TABLE", "dev.de.querywatch_optimization_results"
         )
         top_n = _read_int_env("QUERYWATCH_TOP_N", 10)
         n_runs = _read_int_env("QUERYWATCH_N_RUNS", 3)

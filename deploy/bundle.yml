@@ -16,6 +16,7 @@ variables:
     default: system.query.history
   results_table:
     description: Delta table for benchmark output
+    # PERSONALIZE: Replace this environment-specific default results table before sharing broadly.
     default: dev.de.querywatch_optimization_results
   top_n:
     description: Top N candidate queries per run

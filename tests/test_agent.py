@@ -82,3 +82,79 @@ def test_analyze_and_rewrite_logs_and_reraises_api_errors(mocker, caplog) -> Non
         analyze_and_rewrite(query, client)
 
     assert "Failed to analyze and rewrite query_id=q-123" in caplog.text
+
+
+def test_analyze_and_rewrite_parses_json_inside_preamble_and_code_fence(mocker) -> None:
+    query = _query_record()
+    client = mocker.Mock()
+    client.chat.completions.create.return_value = _response_with_content(
+        mocker,
+        """
+        Here is the optimized rewrite:
+        ```json
+        {
+          "rewritten_query": "select * from sales where ds >= current_date() - interval 7 day",
+          "reasoning": "Adds partition pruning.",
+          "hypothesized_issue": "Missing date filter led to full scan.",
+          "confidence": "high"
+        }
+        ```
+        """,
+    )
+
+    result = analyze_and_rewrite(query, client)
+
+    assert result.confidence == "high"
+    assert result.original_query == query.query_text
+
+
+def test_analyze_and_rewrite_raises_clear_error_on_non_json_output(mocker) -> None:
+    query = _query_record()
+    client = mocker.Mock()
+    client.chat.completions.create.return_value = _response_with_content(
+        mocker,
+        "I cannot provide that right now.",
+    )
+
+    with pytest.raises(ValueError, match="Model response did not contain valid JSON"):
+        analyze_and_rewrite(query, client)
+
+
+def test_analyze_and_rewrite_normalizes_numeric_confidence(mocker) -> None:
+    query = _query_record()
+    client = mocker.Mock()
+    client.chat.completions.create.return_value = _response_with_content(
+        mocker,
+        """
+        {
+          "rewritten_query": "select * from sales where ds >= current_date() - interval 7 day",
+          "reasoning": "Adds partition pruning.",
+          "hypothesized_issue": "Missing date filter led to full scan.",
+          "confidence": 0.98
+        }
+        """,
+    )
+
+    result = analyze_and_rewrite(query, client)
+
+    assert result.confidence == "high"
+
+
+def test_analyze_and_rewrite_defaults_unrecognized_confidence_to_medium(mocker) -> None:
+    query = _query_record()
+    client = mocker.Mock()
+    client.chat.completions.create.return_value = _response_with_content(
+        mocker,
+        """
+        {
+          "rewritten_query": "select * from sales where ds >= current_date() - interval 7 day",
+          "reasoning": "Adds partition pruning.",
+          "hypothesized_issue": "Missing date filter led to full scan.",
+          "confidence": "very certain"
+        }
+        """,
+    )
+
+    result = analyze_and_rewrite(query, client)
+
+    assert result.confidence == "medium"
