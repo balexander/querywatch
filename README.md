@@ -102,3 +102,4 @@ The canonical bundle file is `deploy/bundle.yml`.
 4. Deploy and run smoke job:
    - `databricks bundle deploy --target dev`
    - `databricks bundle run querywatch --target dev`
+
