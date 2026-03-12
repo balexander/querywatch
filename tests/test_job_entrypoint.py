@@ -144,6 +144,34 @@ def test_main_sets_improvement_none_when_not_equivalent(mocker) -> None:
     assert run_query_mock.call_count == 0
 
 
+def test_main_honors_top_n_from_task_parameters(mocker) -> None:
+    fake_spark = mocker.Mock()
+    fake_dbutils = mocker.Mock()
+    fake_dbutils.secrets.get.return_value = "or-key"
+    query = _query_record()
+
+    mocker.patch.object(entrypoint, "_get_spark_session", return_value=fake_spark)
+    mocker.patch.object(entrypoint, "_resolve_dbutils", return_value=fake_dbutils)
+    mocker.patch.object(entrypoint, "_build_openai_client", return_value=mocker.Mock())
+    read_query_history_mock = mocker.patch.object(
+        entrypoint, "_read_query_history", return_value=pd.DataFrame([{"x": 1}])
+    )
+    mocker.patch.object(entrypoint, "parse_query_history", return_value=[query])
+    score_mock = mocker.patch.object(entrypoint, "score_queries", return_value=[query])
+    mocker.patch.object(entrypoint, "analyze_and_rewrite", return_value=_rewrite_result())
+    mocker.patch.object(entrypoint, "benchmark_pair", return_value=_comparison())
+    mocker.patch.object(entrypoint, "_build_run_query", return_value=mocker.Mock())
+    mocker.patch.object(entrypoint, "_run_count_query", side_effect=[10, 10])
+    mocker.patch.object(entrypoint, "check_equivalence", return_value=True)
+    mocker.patch.object(entrypoint, "to_delta_row", return_value={"query_id": "q-1"})
+    mocker.patch.object(entrypoint, "_write_results")
+
+    entrypoint.main(top_n="50")
+
+    assert read_query_history_mock.call_args[0][2] == 50
+    assert score_mock.call_args.kwargs["top_n"] == 50
+
+
 def test_main_filters_non_query_candidates_before_processing(mocker) -> None:
     fake_spark = mocker.Mock()
     fake_dbutils = mocker.Mock()

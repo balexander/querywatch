@@ -49,3 +49,15 @@ def test_job_config_rejects_empty_required_string(monkeypatch: pytest.MonkeyPatc
 
     with pytest.raises(ValueError, match="QUERYWATCH_RESULTS_TABLE must be non-empty"):
         JobConfig.from_env()
+
+
+def test_job_config_prefers_task_parameter_overrides(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("QUERYWATCH_TOP_N", "10")
+    monkeypatch.setenv("QUERYWATCH_N_RUNS", "3")
+
+    config = JobConfig.from_env({"top_n": "50", "n_runs": "5"})
+
+    assert config.top_n == 50
+    assert config.n_runs == 5

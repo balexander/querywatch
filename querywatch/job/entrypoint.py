@@ -46,8 +46,8 @@ RAW_HISTORY_COLUMNS: set[str] = {
 }
 
 
-def main() -> None:
-    config = JobConfig.from_env()
+def main(**task_parameters: str) -> None:
+    config = JobConfig.from_env(task_parameters or None)
     spark = _get_spark_session()
     dbutils = _resolve_dbutils(spark)
     api_key = dbutils.secrets.get(scope=config.secret_scope, key=config.secret_key)

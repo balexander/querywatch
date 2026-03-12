@@ -45,11 +45,34 @@ resources:
   jobs:
     querywatch:
       name: ${var.job_name}
+      parameters:
+        - name: source_table
+          default: ${var.source_table}
+        - name: results_table
+          default: ${var.results_table}
+        - name: top_n
+          default: ${var.top_n}
+        - name: n_runs
+          default: ${var.n_runs}
+        - name: secret_scope
+          default: ${var.secret_scope}
+        - name: secret_key
+          default: ${var.secret_key}
+        - name: openai_base_url
+          default: ${var.openai_base_url}
       tasks:
         - task_key: run_querywatch
           python_wheel_task:
             package_name: querywatch
             entry_point: querywatch-job
+            named_parameters:
+              source_table: "{{job.parameters.source_table}}"
+              results_table: "{{job.parameters.results_table}}"
+              top_n: "{{job.parameters.top_n}}"
+              n_runs: "{{job.parameters.n_runs}}"
+              secret_scope: "{{job.parameters.secret_scope}}"
+              secret_key: "{{job.parameters.secret_key}}"
+              openai_base_url: "{{job.parameters.openai_base_url}}"
           environment_key: default
       environments:
         - environment_key: default
