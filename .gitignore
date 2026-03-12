@@ -1,1 +1,7 @@
 PROJECT_INSTRUCTIONS.md
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+*.pyc
+dist/

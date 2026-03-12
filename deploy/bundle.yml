@@ -1,0 +1,82 @@
+bundle:
+  name: querywatch
+
+artifacts:
+  querywatch_wheel:
+    type: whl
+    path: ..
+    build: hatch build
+
+variables:
+  job_name:
+    description: Databricks job name
+    default: querywatch
+  source_table:
+    description: Unity Catalog source for query history
+    default: system.query.history
+  results_table:
+    description: Delta table for benchmark output
+    # PERSONALIZE: Replace this environment-specific default results table before sharing broadly.
+    default: dev.de.querywatch_optimization_results
+  top_n:
+    description: Top N candidate queries per run
+    default: "10"
+  n_runs:
+    description: Number of benchmark runs per query variant
+    default: "3"
+  secret_scope:
+    description: Secret scope containing OpenRouter API key
+    default: querywatch-secrets
+  secret_key:
+    description: Secret key name containing OpenRouter API key
+    default: openrouter-api-key
+  openai_base_url:
+    description: OpenRouter base URL for OpenAI-compatible SDK
+    default: https://openrouter.ai/api/v1
+  serverless_environment_version:
+    description: Databricks serverless jobs environment version
+    default: "4"
+
+targets:
+  dev:
+    default: true
+
+resources:
+  jobs:
+    querywatch:
+      name: ${var.job_name}
+      parameters:
+        - name: source_table
+          default: ${var.source_table}
+        - name: results_table
+          default: ${var.results_table}
+        - name: top_n
+          default: ${var.top_n}
+        - name: n_runs
+          default: ${var.n_runs}
+        - name: secret_scope
+          default: ${var.secret_scope}
+        - name: secret_key
+          default: ${var.secret_key}
+        - name: openai_base_url
+          default: ${var.openai_base_url}
+      tasks:
+        - task_key: run_querywatch
+          python_wheel_task:
+            package_name: querywatch
+            entry_point: querywatch-job
+            named_parameters:
+              source_table: "{{job.parameters.source_table}}"
+              results_table: "{{job.parameters.results_table}}"
+              top_n: "{{job.parameters.top_n}}"
+              n_runs: "{{job.parameters.n_runs}}"
+              secret_scope: "{{job.parameters.secret_scope}}"
+              secret_key: "{{job.parameters.secret_key}}"
+              openai_base_url: "{{job.parameters.openai_base_url}}"
+          environment_key: default
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: ${var.serverless_environment_version}
+            dependencies:
+              - ../dist/*.whl

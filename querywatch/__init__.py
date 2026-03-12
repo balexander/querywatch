@@ -1,0 +1,2 @@
+"""querywatch package."""
+
